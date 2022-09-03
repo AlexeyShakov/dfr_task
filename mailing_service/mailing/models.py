@@ -28,6 +28,11 @@ class Mailing(models.Model):
     def __str__(self):
         return f"Рассылка от {self.beginning_date}"
 
+    class Meta:
+        verbose_name = "Рассылка"
+        verbose_name_plural = "Рассылки"
+
+
 
 class Client(models.Model):
 
@@ -39,8 +44,42 @@ class Client(models.Model):
 
     mobile_validator = RegexValidator(regex=r"^7\d{10}$")
     mobile_number = models.CharField(max_length=11, validators=[mobile_validator])
-    email = models.CharField()
-    name = models.CharField()
-    surname = models.CharField()
-    gender = models.CharField(max_length=1, choices=GENDER, verbose_name="Пол пользователя")
-    timezone = models.CharField(choices=TIMEZONES, default="UTC")
+    operator_code = models.CharField(max_length=3, default="---")
+    name = models.CharField(max_length=50)
+    surname = models.CharField(max_length=50)
+    email = models.CharField(max_length=50)
+    tag = models.CharField(max_length=1, choices=GENDER, verbose_name="Пол пользователя")
+    timezone = models.CharField(max_length=50, choices=TIMEZONES)
+
+    def save(self, *args, **kwargs):
+        self.operator_code = self.mobile_number[1:4]
+        super(Client, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} {self.surname}"
+
+
+class Message(models.Model):
+    SENT = "sent"
+    NO_SENT = "no sent"
+
+    STATUS_CHOICES = [
+        (SENT, "Sent"),
+        (NO_SENT, "No sent"),
+    ]
+
+    time_create = models.DateTimeField(verbose_name='Time create', auto_now_add=True)
+    sending_status = models.CharField(verbose_name='Sending status', max_length=15, choices=STATUS_CHOICES)
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name='messages')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages')
+
+    def __str__(self):
+        return f'Message {self.id} with text {self.mailing} for {self.client}'
+
+    class Meta:
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'
+
+
+
+
