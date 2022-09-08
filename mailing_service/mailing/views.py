@@ -13,16 +13,16 @@ class MailingViewSet(viewsets.ModelViewSet):
     serializer_class = MailingSerializer
 
     @staticmethod
-    def general_statistic():
+    @action(methods=["get"], detail=False)
+    def general_statistic(request):
         """
         Данный метод делает статистику по всем рассылкам и отправленным сообщениям.
         """
-        pass
+        return Response({"detail": "Метод работает"})
 
     def detailed_statistic(self):
         """
         Данный делает детальную статистику по одной рассылке
-        :return:
         """
         pass
 
