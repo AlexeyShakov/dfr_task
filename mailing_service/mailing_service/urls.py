@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from mailing.views import MailingViewSet
+from mailing.views import MailingViewSet, ClientViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'api/v1/mailing', MailingViewSet, basename='mailing')
+router.register(r'api/v1/mailing', MailingViewSet)
+router.register(r'api/v1/client', ClientViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
